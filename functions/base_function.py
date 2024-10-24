@@ -14,3 +14,4 @@ class BaseFunction:
         
         # Evaluate and return f(x)
         return self.f(x_controlled)
+    
