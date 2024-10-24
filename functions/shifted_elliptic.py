@@ -15,22 +15,3 @@ class ShiftedElliptic(BaseFunction):
 
         # Return the function value with bias
         return sum_value
-
-
-# Example usage:
-D = 3  # Dimension
-o = np.zeros(D)  # Shifted global optimum
-M = np.eye(D)  # Orthogonal matrix
-
-# Define bounds
-x_lower = [-100] * D
-x_upper = [100] * D
-
-# Create oracle
-oracle = BaseFunction(
-    lambda x: ShiftedElliptic.shifted_elliptic_function(x, o, M), x_lower, x_upper
-)
-
-# Test the oracle
-print(oracle.evaluate([0, 0, 0]))
-print(oracle.evaluate([-50, 50, 100]))
