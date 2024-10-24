@@ -7,9 +7,9 @@ from functions.shifted_sphere import ShiftedSphere
 def test_function(
     function_name, optimizer, dimension=10, max_iter=100, population_size=30, alfa=5
 ):
+    print("-" * 50)
     print(f"\nTesting {function_name.__name__}")
     print(f"Using optimizer {optimizer}")
-    print("-" * 50)
 
     func = lambda x: function_name.func(x)
 
@@ -31,6 +31,7 @@ def test_function(
     print(f"\nFinal Results:")
     print(f"Best fitness: {best_fitness}")
     print(f"Best solution: {best_solution}")
+    print("-" * 50)
 
 
 def main():
