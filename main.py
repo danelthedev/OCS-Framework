@@ -5,16 +5,13 @@ from functions.shifted_sphere import ShiftedSphere
 
 
 def test_function(
-    function_name, dimension=10, max_iter=100, population_size=30, alfa=5
+    function_name, optimizer, dimension=10, max_iter=100, population_size=30, alfa=5
 ):
     print(f"\nTesting {function_name.__name__}")
+    print(f"Using optimizer {optimizer}")
     print("-" * 50)
 
-    # Create random shift vector and rotation matrix for shifted elliptic
-    if function_name == ShiftedElliptic:
-        o = np.zeros(dimension)  # shift vector should be 0 (global optimum at 0)
-        M = np.random.randn(dimension, dimension)  # rotation matrix
-        func = lambda x: ShiftedElliptic.func(x, o, M)
+    func = lambda x: function_name.func(x)
 
     # Initialize the random searcher with updated bounds [-100, 100]
     searcher = RandomSearcher(
@@ -26,7 +23,10 @@ def test_function(
     )
 
     # Run optimization
-    best_solution, best_fitness = searcher.optimize_Population_V3()
+    if optimizer == "optimize_Population_V1_selfAdaptive":
+        best_solution, best_fitness = searcher.optimize_Population_V1_selfAdaptive()
+    elif optimizer == "optimize_Population_V3":
+        best_solution, best_fitness = searcher.optimize_Population_V3()
 
     print(f"\nFinal Results:")
     print(f"Best fitness: {best_fitness}")
@@ -41,7 +41,8 @@ def main():
     alfa = 5  # number of offspring per parent
 
     # Test both functions
-    test_function(ShiftedElliptic, dimension, max_iter, population_size, alfa)
+    test_function(ShiftedElliptic, "optimize_Population_V1_selfAdaptive", dimension, max_iter, population_size, alfa)
+    test_function(ShiftedElliptic, "optimize_Population_V3", dimension, max_iter, population_size, alfa)
 
 
 if __name__ == "__main__":

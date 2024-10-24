@@ -4,14 +4,12 @@ from functions.base_function import BaseFunction
 
 class ShiftedElliptic(BaseFunction):
 
-    def func(x, o, M):
-        # Calculate z = (x - o) * M
-        z = np.dot((x - o), M)
+    def func(x):
 
         # Calculate the function value
         D = len(x)
         sum_value = np.sum(
-            [(10**6) ** ((i - 1) / (D - 1)) * z[i] ** 2 for i in range(D)]
+            [(10**6) ** ((i - 1) / (D - 1)) * x[i] ** 2 for i in range(D)]
         )
 
         # Return the function value with bias

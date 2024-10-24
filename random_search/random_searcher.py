@@ -2,13 +2,16 @@ import numpy as np
 
 class RandomSearcher():
 
-    def __init__(self, max_iter, alfa, func, population_size, dimension):
+    def __init__(self, max_iter, alfa, func, population_size, dimension, print_results = False):
         self.alfa = alfa
         self.max_iter = max_iter
         self.func = func
         self.dimension = dimension
+        self.population_size = population_size
         self.population = np.random.uniform(-10, 10, (population_size, dimension))  # Initial population
         self.fitness = np.array([self.func(ind) for ind in self.population])  # Fitness of the population
+
+        self.print_results = print_results
 
     def optimize_Population_V1_selfAdaptive(self):
         for iteration in range(self.max_iter):
@@ -34,7 +37,8 @@ class RandomSearcher():
             self.population = combined_population[best_indices]
             self.fitness = combined_fitness[best_indices]
 
-            print(f"Iteration {iteration + 1}, Best fitness: {self.fitness[0]}")
+            if self.print_results:
+                print(f"Iteration {iteration + 1}, Best fitness: {self.fitness[0]}")
 
         # Return the best solution found
         best_index = np.argmin(self.fitness)
@@ -78,7 +82,8 @@ class RandomSearcher():
                 self.fitness = combined_fitness[:len(self.fitness)]
 
             #Print current best fitness every iteration
-            print(f"Iteration {iteration + 1}, Best fitness: {np.min(self.fitness)}")
+            if self.print_results:
+                print(f"Iteration {iteration + 1}, Best fitness: {np.min(self.fitness)}")
 
         # Return the best solution found
         best_index = np.argmin(self.fitness)
