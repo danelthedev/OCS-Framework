@@ -1,6 +1,6 @@
 from base_function import BaseFunction
 
-class ShiftedSphere(BaseFunction):
+class ShiftedSchwefel(BaseFunction):
 
     def func(self, x):
         D = len(x)

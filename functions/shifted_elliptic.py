@@ -3,6 +3,7 @@ from base_function import BaseFunction
 
 
 class ShiftedElliptic(BaseFunction):
+    
     def func(x, o, M):
         # Calculate z = (x - o) * M
         z = np.dot((x - o), M)
