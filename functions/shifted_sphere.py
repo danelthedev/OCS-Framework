@@ -1,4 +1,4 @@
-from base_function import BaseFunction
+from functions.base_function import BaseFunction
 
 class ShiftedSphere(BaseFunction):
 

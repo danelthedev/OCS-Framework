@@ -1,5 +1,5 @@
 import numpy as np
-from base_function import BaseFunction
+from functions.base_function import BaseFunction
 
 
 class ShiftedElliptic(BaseFunction):
