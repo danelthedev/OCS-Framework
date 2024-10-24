@@ -14,7 +14,7 @@ def test_function(
     if function_name == ShiftedElliptic:
         o = np.zeros(dimension)  # shift vector should be 0 (global optimum at 0)
         M = np.random.randn(dimension, dimension)  # rotation matrix
-        func = lambda x: ShiftedElliptic.shifted_elliptic_function(x, o, M)
+        func = lambda x: ShiftedElliptic.func(x, o, M)
 
     # Initialize the random searcher with updated bounds [-100, 100]
     searcher = RandomSearcher(
