@@ -3,7 +3,7 @@ from base_function import BaseFunction
 
 
 class ShiftedElliptic(BaseFunction):
-    def shifted_elliptic_function(x, o, M, f_bias=450):
+    def shifted_elliptic_function(x, o, M):
         # Calculate z = (x - o) * M
         z = np.dot((x - o), M)
 
@@ -14,7 +14,7 @@ class ShiftedElliptic(BaseFunction):
         )
 
         # Return the function value with bias
-        return sum_value + f_bias
+        return sum_value
 
 
 # Example usage:
