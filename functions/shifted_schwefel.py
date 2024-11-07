@@ -1,8 +1,8 @@
-from base_function import BaseFunction
+from functions.base_function import BaseFunction
 
 class ShiftedSchwefel(BaseFunction):
 
-    def func(self, x):
+    def func(x):
         D = len(x)
         result = 0
         for i in range(1, D+1):

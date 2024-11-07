@@ -14,16 +14,43 @@ class CGA:
 
         self.population = self.initialize_population()
 
+
+    def decode(self, individual, n=2):
+        x = 200 / (pow(2, self.gene_length) - 1)
+        
+        i = 0
+        for bit in individual:
+            x += bit * pow(2, i)
+            i += 1
+
+        x -= 100
+
+        binary_x = bin(int(x))[2:]
+        length_per_part = len(binary_x) // n
+        remainder = len(binary_x) % n
+
+        if remainder != 0:
+                padding = '0' * (n - remainder)
+                binary_x = padding + binary_x
+
+        parts = [int(binary_x[i * length_per_part: (i + 1) * length_per_part]) for i in range(n)]
+
+        return parts
+    
+
     def initialize_population(self):
         return [[random.randint(0, 1) for _ in range(self.gene_length)] for _ in range(self.population_size)]
 
+
     def fitness(self, individual):
-        return self.fitness_function(individual)
+        return self.fitness_function(self.decode(individual))
+
 
     def selection(self):
         total_fitness = sum(self.fitness(individual) for individual in self.population)
         selection_probs = [self.fitness(individual) / total_fitness for individual in self.population]
         return random.choices(self.population, weights=selection_probs, k=2)
+
 
     def crossover(self, parent1, parent2):
         if random.random() < self.pc:
@@ -34,8 +61,10 @@ class CGA:
         else:
             return parent1, parent2
 
+
     def mutation(self, individual):
         return [gene if random.random() > self.pm else 1 - gene for gene in individual]
+
 
     def replacement(self):
         new_population = []
@@ -46,6 +75,7 @@ class CGA:
             if len(new_population) < self.population_size:
                 new_population.append(self.mutation(child2))
         return new_population
+
 
     def run(self):
         evaluations = 0

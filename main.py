@@ -2,6 +2,7 @@ import numpy as np
 from random_search.random_searcher import RandomSearcher
 from functions.shifted_elliptic import ShiftedElliptic
 from functions.shifted_sphere import ShiftedSphere
+from functions.shifted_schwefel import ShiftedSchwefel
 
 from genetic_algorithms.cga import CGA
 
@@ -37,11 +38,9 @@ def random_search_test(
 
 
 def genetic_test():
-    def fitness_function(individual):
-        return sum(individual)
-
+    
     # Initialize and run the genetic algorithm
-    ga = CGA(fitness_function=fitness_function)
+    ga = CGA(fitness_function=ShiftedSchwefel.func)
     best_solution, best_fitness = ga.run()
 
     print("Best Solution:", best_solution)
