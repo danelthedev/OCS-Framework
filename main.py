@@ -3,8 +3,10 @@ from random_search.random_searcher import RandomSearcher
 from functions.shifted_elliptic import ShiftedElliptic
 from functions.shifted_sphere import ShiftedSphere
 
+from genetic_algorithms.cga import CGA
 
-def test_function(
+
+def random_search_test(
     function_name, optimizer, dimension=10, max_iter=100, population_size=30, alfa=5
 ):
     print("-" * 50)
@@ -34,16 +36,20 @@ def test_function(
     print("-" * 50)
 
 
-def main():
-    # Test parameters
-    dimension = 5
-    max_iter = 100
-    population_size = 30
-    alfa = 5  # number of offspring per parent
+def genetic_test():
+    def fitness_function(individual):
+        return sum(individual)
 
-    # Test both functions
-    test_function(ShiftedElliptic, "optimize_Population_V1_selfAdaptive", dimension, max_iter, population_size, alfa)
-    test_function(ShiftedElliptic, "optimize_Population_V3", dimension, max_iter, population_size, alfa)
+    # Initialize and run the genetic algorithm
+    ga = CGA(fitness_function=fitness_function)
+    best_solution, best_fitness = ga.run()
+
+    print("Best Solution:", best_solution)
+    print("Best Fitness:", best_fitness)
+
+
+def main():
+    genetic_test()
 
 
 if __name__ == "__main__":
