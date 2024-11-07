@@ -38,9 +38,9 @@ def random_search_test(
 
 
 def genetic_test():
-    
+
     # Initialize and run the genetic algorithm
-    ga = CGA(fitness_function=ShiftedSchwefel.func)
+    ga = CGA(fitness_function=ShiftedSchwefel.func, nfe=10000)
     best_solution, best_fitness = ga.run()
 
     print("Best Solution:", best_solution)

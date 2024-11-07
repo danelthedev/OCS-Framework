@@ -16,26 +16,34 @@ class CGA:
 
 
     def decode(self, individual, n=2):
-        x = 200 / (pow(2, self.gene_length) - 1)
+        """
+        Decode the binary chromosome into `n` real values. 
+        Each real value will be scaled to a specific range.
+        """
+        # Convert the binary individual to a string of bits
+        binary_str = ''.join(str(gene) for gene in individual)
         
-        i = 0
-        for bit in individual:
-            x += bit * pow(2, i)
-            i += 1
+        # Length of the binary string for each real value
+        length_per_part = len(binary_str) // n
 
-        x -= 100
+        # To store the decoded real values
+        real_values = []
+        
+        for i in range(n):
+            # Extract the substring representing the current real value
+            part = binary_str[i * length_per_part: (i + 1) * length_per_part]
+            
+            # Convert the binary part into a decimal (real number)
+            decimal_value = int(part, 2)
+            
+            # Scale the decimal value to the desired range [-100, 100]
+            real_value = -100 + decimal_value * (200 / (pow(2, length_per_part) - 1))
+            
+            # Append the decoded real value
+            real_values.append(real_value)
 
-        binary_x = bin(int(x))[2:]
-        length_per_part = len(binary_x) // n
-        remainder = len(binary_x) % n
+        return real_values
 
-        if remainder != 0:
-                padding = '0' * (n - remainder)
-                binary_x = padding + binary_x
-
-        parts = [int(binary_x[i * length_per_part: (i + 1) * length_per_part]) for i in range(n)]
-
-        return parts
     
 
     def initialize_population(self):
@@ -79,19 +87,21 @@ class CGA:
 
     def run(self):
         evaluations = 0
-        best_fitness = -1  # To store the best fitness score found
+        best_fitness = float('inf')  # Initialize to a very large value for minimization
         best_individual = None
 
         for generation in range(self.nfe):
-            self.population.sort(key=self.fitness, reverse=True)
-            current_best_individual = self.population[0]
+            # Sort the population in ascending order of fitness (for minimization)
+            self.population.sort(key=self.fitness)
+
+            current_best_individual = self.population[0]  # Best individual (lowest fitness)
             current_best_fitness = self.fitness(current_best_individual)
 
             # Print progress
             print(f"Generation {generation + 1}: Best fitness = {current_best_fitness}")
 
             # Update the best fitness and individual if necessary
-            if current_best_fitness > best_fitness:
+            if current_best_fitness < best_fitness:
                 best_fitness = current_best_fitness
                 best_individual = current_best_individual
 
@@ -100,7 +110,7 @@ class CGA:
 
             # Check if we found an optimal solution
             evaluations += self.population_size  # Count evaluations for this generation
-            if best_fitness == self.gene_length:
+            if best_fitness == 0:  # Since the shifted elliptic function tends to 0 at the global minimum
                 print(f"Optimal solution found at generation {generation + 1}")
                 break
 
