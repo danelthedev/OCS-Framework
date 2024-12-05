@@ -7,6 +7,7 @@ def differential_evolution_rand1_bin(func, bounds, F, CR, pop_size, max_nfe):
     for i in range(dim):
         pop[:, i] = bounds[i][0] + pop[:, i] * (bounds[i][1] - bounds[i][0])
 
+
     nfe = 0
     while nfe < max_nfe:
         for i in range(pop_size):
