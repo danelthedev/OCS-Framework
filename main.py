@@ -47,8 +47,27 @@ def genetic_test():
     print("Best Fitness:", best_fitness)
 
 
+def differential_evolution_test():
+    from differential_evolution.de import DE
+
+    # Define the bounds for the optimization problem
+    bounds = np.array([[-100, 100]] * 10)
+
+    # Define the DE optimizer
+    de = DE(bounds=bounds, mut=0.8, crossp=0.7, popsize=20, its=1000)
+
+    # Define the objective function
+    def fobj(x):
+        return np.sum(x ** 2)
+
+    # Run the DE optimizer
+    best = de.de(fobj)
+
+    print("Best solution:", best)
+
+
 def main():
-    genetic_test()
+    differential_evolution_test()
 
 
 if __name__ == "__main__":
