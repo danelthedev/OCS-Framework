@@ -1,10 +1,13 @@
 import numpy as np
+
 from random_search.random_searcher import RandomSearcher
-from functions.shifted_elliptic import ShiftedElliptic
-from functions.shifted_sphere import ShiftedSphere
 from functions.shifted_schwefel import ShiftedSchwefel
 
 from genetic_algorithms.cga import CGA
+
+from differential_evolution.de_current_1_exp import differential_evolution_current_1_exp
+from differential_evolution.de_rand_1_bin import differential_evolution_rand1_bin
+
 
 
 def random_search_test(
@@ -48,23 +51,16 @@ def genetic_test():
 
 
 def differential_evolution_test():
-    from differential_evolution.de import DE
+    # Example usage
+    def sphere(x):
+        return sum(x ** 2)
 
-    # Define the bounds for the optimization problem
-    bounds = np.array([[-100, 100]] * 10)
+    bounds = [(-100, 100)] * 20
+    best_solution = differential_evolution_rand1_bin(sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000)
+    print("Best solution:", best_solution, "Fitness:", sphere(best_solution))
 
-    # Define the DE optimizer
-    de = DE(bounds=bounds, mut=0.8, crossp=0.7, popsize=20, its=1000)
-
-    # Define the objective function
-    def fobj(x):
-        return np.sum(x ** 2)
-
-    # Run the DE optimizer
-    best = de.de(fobj)
-
-    print("Best solution:", best)
-
+    best_solution = differential_evolution_rand1_bin(sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000)
+    print("Best solution:", best_solution, "Fitness:", sphere(best_solution))
 
 def main():
     differential_evolution_test()
