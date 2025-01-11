@@ -4,7 +4,7 @@ from functions.base_function import BaseFunction
 
 class ShiftedElliptic(BaseFunction):
 
-    def func(x):
+    def func(self, x):
 
         # Calculate the function value
         D = len(x)
