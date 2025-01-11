@@ -8,6 +8,8 @@ from genetic_algorithms.cga import CGA
 from differential_evolution.de_current_1_exp import differential_evolution_current_1_exp
 from differential_evolution.de_rand_1_bin import differential_evolution_rand1_bin
 
+from genetic_algorithms.cga_adaptivev1 import CGAAdaptiveV1
+from functions.shifted_elliptic import ShiftedElliptic
 
 
 def random_search_test(
@@ -62,8 +64,22 @@ def differential_evolution_test():
     best_solution = differential_evolution_rand1_bin(sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000)
     print("Best solution:", best_solution, "Fitness:", sphere(best_solution))
 
+
+def cga_adaptive_test():
+    # Initialize problem (2 dimensions)
+    problem = ShiftedElliptic(x_lower=[-100] * 2, x_upper=[100] * 2)
+
+    cga = CGAAdaptiveV1(pop_size=50, initial_pc=0.8, initial_pm=0.1, nfe_max=1000)
+    best_solution, best_fitness = cga.optimize(problem)
+
+    print("CGA Adaptive V1 Results:")
+    print("Best Solution:", best_solution)
+    print("Best Fitness:", best_fitness)
+
+
 def main():
     differential_evolution_test()
+    cga_adaptive_test()
 
 
 if __name__ == "__main__":
