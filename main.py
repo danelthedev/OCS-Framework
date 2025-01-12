@@ -10,6 +10,7 @@ from differential_evolution.de_rand_1_bin import differential_evolution_rand1_bi
 
 from genetic_algorithms.cga_adaptivev1 import CGAAdaptiveV1
 from functions.shifted_elliptic import ShiftedElliptic
+from real_coded_ga.rga_3 import RGA_3
 
 
 def random_search_test(
@@ -77,9 +78,24 @@ def cga_adaptive_test():
     print("Best Fitness:", best_fitness)
 
 
+def rga3_test():
+    # Initialize problem (2 dimensions)
+    problem = ShiftedElliptic(x_lower=[-100] * 3, x_upper=[100] * 3)
+
+    bounds = list(zip(problem.x_lower, problem.x_upper))
+
+    rga = RGA_3(bounds=bounds, pop_size=50, pc=0.8, pm=0.1, nfe=1000)
+    best_solution, best_fitness = rga.optimize(problem.func)
+
+    print("\nRGA_3 Results:")
+    print("Best Solution:", best_solution)
+    print("Best Fitness:", best_fitness)
+
+
 def main():
     differential_evolution_test()
     cga_adaptive_test()
+    rga3_test()
 
 
 if __name__ == "__main__":
