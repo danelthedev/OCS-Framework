@@ -92,11 +92,25 @@ def rga3_test():
     print("Best Fitness:", best_fitness)
 
 
-def main():
-    differential_evolution_test()
-    cga_adaptive_test()
-    rga3_test()
+def rga1_adaptive_test():
+    # Initialize problem (2 dimensions)
+    problem = ShiftedElliptic(x_lower=[-100] * 2, x_upper=[100] * 2)
 
+    bounds = list(zip(problem.x_lower, problem.x_upper))
+
+    rga = RGA_3(bounds=bounds, pop_size=50, pc=0.8, pm=0.1, nfe=1000)
+    best_solution, best_fitness = rga.optimize(problem.func)
+
+    print("\nRGA_1 Adaptive Results:")
+    print("Best Solution:", best_solution)
+    print("Best Fitness:", best_fitness)
+
+
+def main():
+    # differential_evolution_test()
+    # cga_adaptive_test()
+    # rga3_test()
+    rga1_adaptive_test()
 
 if __name__ == "__main__":
     main()
