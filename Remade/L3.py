@@ -51,15 +51,13 @@ class CGAAdaptiveV1Replacement:
     def run(self):
         best_so_far = float('inf')
         iteration = 0
-        
-        # Initial population evaluation
+    
         initial_fitness = self.evaluate_population()
         best_so_far = min(best_so_far, np.min(initial_fitness))
-        self.convergence_history = [best_so_far]  # Start with initial best
-        
-        # Calculate max iterations based on remaining NFE
-        remaining_nfe = self.max_nfe - self.population_size  # Subtract initial population evaluation
-        evaluations_per_iter = 2  # 2 children per iteration
+        self.convergence_history = [best_so_far]
+    
+        remaining_nfe = self.max_nfe - self.population_size 
+        evaluations_per_iter = 2
         max_iterations = remaining_nfe // evaluations_per_iter
         
         for iteration in range(max_iterations):
@@ -85,8 +83,6 @@ class CGAAdaptiveV1Replacement:
             current_best = np.min(fitness)
             best_so_far = min(best_so_far, current_best)
             self.convergence_history.append(best_so_far)
-
-        # Normalize convergence history to 100 points
         expected_length = 100
         if len(self.convergence_history) < expected_length:
             self.convergence_history.extend([best_so_far] * (expected_length - len(self.convergence_history)))
@@ -95,8 +91,7 @@ class CGAAdaptiveV1Replacement:
 
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])
-
-# Parameters
+        
 lower_bounds = [-100] * 10
 upper_bounds = [100] * 10
 population_size = 20
@@ -104,7 +99,6 @@ pc_initial = 0.8
 pm_initial = 0.1
 max_nfe = 1000
 
-# Using sphere_function from L1.py
 optimizer = CGAAdaptiveV1Replacement(sphere_function, lower_bounds, upper_bounds, population_size, pc_initial, pm_initial, max_nfe)
 best_solution, best_fitness = optimizer.run()
 
