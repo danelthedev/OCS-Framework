@@ -1,5 +1,5 @@
 import numpy as np
-from L1 import GeneralFunction, sphere_function
+from Remade.L1 import GeneralFunction, sphere_function
 
 
 class PopulationV3Adaptive:
@@ -11,6 +11,7 @@ class PopulationV3Adaptive:
         self.max_iter = max_iter
         self.alpha_initial = alpha_initial
         self.population = self.initialize_population()
+        self.convergence_history = []
 
     def initialize_population(self):
         return np.random.uniform(self.lower_bounds, self.upper_bounds, (self.population_size, len(self.lower_bounds)))
@@ -22,19 +23,35 @@ class PopulationV3Adaptive:
         return np.array([self.obj_function(ind) for ind in population])
 
     def run(self):
-        for iter_no in range(1, self.max_iter + 1):
-            alpha = self.alpha_initial / iter_no
+        best_fitness = float('inf')
+        nfe = 0  # Track function evaluations
+        
+        while nfe < 1000:  # Your NEF condition
+            alpha = self.alpha_initial * (1 - nfe/1000)  # Less aggressive decay
+            
+            # Generate and evaluate new solutions
             new_population = []
             for agent in self.population:
-                new_agents = [self.enforce_bounds(agent + alpha * np.random.uniform(-1, 1, len(agent))) for _ in
-                              range(self.population_size)]
-                new_population.extend(new_agents)
+                new_agent = self.enforce_bounds(agent + alpha * np.random.uniform(-1, 1, len(agent)))
+                new_population.append(new_agent)
+                nfe += 1
+                if nfe >= 1000:
+                    break
+                
             new_population = np.array(new_population)
             new_population_fitness = self.evaluate_population(new_population)
-
             current_population_fitness = self.evaluate_population(self.population)
-            better_agents = new_population[new_population_fitness < np.max(current_population_fitness)]
-            self.population = np.vstack([self.population, better_agents])[:self.population_size]
+            
+            # Combine and select best solutions
+            combined_population = np.vstack([self.population, new_population])
+            combined_fitness = np.hstack([current_population_fitness, new_population_fitness])
+            best_indices = np.argsort(combined_fitness)[:self.population_size]
+            self.population = combined_population[best_indices]
+            
+            # Track best fitness
+            current_best = np.min(combined_fitness)
+            best_fitness = min(best_fitness, current_best)
+            self.convergence_history.append(best_fitness)
 
         best_solution_idx = np.argmin(self.evaluate_population(self.population))
         return self.population[best_solution_idx], self.obj_function(self.population[best_solution_idx])

@@ -1,5 +1,5 @@
 import numpy as np
-from L1 import GeneralFunction, sphere_function
+from Remade.L1 import GeneralFunction, sphere_function
 
 class DEBest2Exp:
     def __init__(self, obj_function, lower_bounds, upper_bounds, population_size, F, CR, max_nfe):
@@ -44,10 +44,18 @@ class DEBest2Exp:
         return target
 
     def run(self):
+        best_so_far = float('inf')
+        self.convergence_history = []  # Initialize convergence history
+
         while self.nfe < self.max_nfe:
             fitness = self.evaluate_population()
             best_idx = np.argmin(fitness)
             best = self.population[best_idx]
+            
+            # Track best solution
+            current_best = np.min(fitness)
+            best_so_far = min(best_so_far, current_best)
+            self.convergence_history.append(best_so_far)
 
             new_population = []
             for i, target in enumerate(self.population):
@@ -60,6 +68,13 @@ class DEBest2Exp:
                 new_population.append(self.selection(target, trial))
 
             self.population = np.array(new_population)
+
+        # Normalize convergence history to 100 points
+        expected_length = 100
+        if len(self.convergence_history) < expected_length:
+            self.convergence_history.extend([best_so_far] * (expected_length - len(self.convergence_history)))
+        elif len(self.convergence_history) > expected_length:
+            self.convergence_history = self.convergence_history[:expected_length]
 
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])

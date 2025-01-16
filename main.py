@@ -56,13 +56,17 @@ def genetic_test():
 def differential_evolution_test():
     # Example usage
     def sphere(x):
-        return sum(x ** 2)
+        return sum(x**2)
 
     bounds = [(-100, 100)] * 20
-    best_solution = differential_evolution_rand1_bin(sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000)
+    best_solution = differential_evolution_rand1_bin(
+        sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000
+    )
     print("Best solution:", best_solution, "Fitness:", sphere(best_solution))
 
-    best_solution = differential_evolution_rand1_bin(sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000)
+    best_solution = differential_evolution_rand1_bin(
+        sphere, np.array(bounds), F=0.8, CR=0.9, pop_size=20, max_nfe=1000
+    )
     print("Best solution:", best_solution, "Fitness:", sphere(best_solution))
 
 
@@ -111,6 +115,7 @@ def main():
     # cga_adaptive_test()
     # rga3_test()
     rga1_adaptive_test()
+
 
 if __name__ == "__main__":
     main()

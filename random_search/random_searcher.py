@@ -1,19 +1,28 @@
 import numpy as np
 
-class RandomSearcher():
 
-    def __init__(self, max_iter, alfa, func, population_size, dimension, print_results = False):
+class RandomSearcher:
+
+    def __init__(
+        self, max_iter, alfa, func, population_size, dimension, print_results=False
+    ):
         self.alfa = alfa
         self.max_iter = max_iter
         self.func = func
         self.dimension = dimension
         self.population_size = population_size
-        self.population = np.random.uniform(-10, 10, (population_size, dimension))  # Initial population
-        self.fitness = np.array([self.func(ind) for ind in self.population])  # Fitness of the population
+        self.population = np.random.uniform(
+            -10, 10, (population_size, dimension)
+        )  # Initial population
+        self.fitness = np.array(
+            [self.func(ind) for ind in self.population]
+        )  # Fitness of the population
 
         self.print_results = print_results
+        self.convergence_history = []
 
     def optimize_Population_V1_selfAdaptive(self):
+        best_so_far = float("inf")
         for iteration in range(self.max_iter):
             new_population = []
             new_fitness = []
@@ -33,18 +42,22 @@ class RandomSearcher():
             combined_population = np.vstack((self.population, new_population))
             combined_fitness = np.hstack((self.fitness, new_fitness))
 
-            best_indices = np.argsort(combined_fitness)[:self.population_size]
+            best_indices = np.argsort(combined_fitness)[: self.population_size]
             self.population = combined_population[best_indices]
             self.fitness = combined_fitness[best_indices]
 
             if self.print_results:
                 print(f"Iteration {iteration + 1}, Best fitness: {self.fitness[0]}")
 
+            best_so_far = min(best_so_far, self.fitness[0])
+            self.convergence_history.append(best_so_far)
+
         # Return the best solution found
         best_index = np.argmin(self.fitness)
         return self.population[best_index], self.fitness[best_index]
-    
+
     def optimize_Population_V3(self):
+        best_so_far = float("inf")
         for iteration in range(self.max_iter):
             # New population to store offspring
             new_population = []
@@ -54,7 +67,9 @@ class RandomSearcher():
                 parent = self.population[i]
 
                 # Generate multiple offspring for each parent
-                for _ in range(self.alfa):  # Assuming alfa is the number of offspring per agent
+                for _ in range(
+                    self.alfa
+                ):  # Assuming alfa is the number of offspring per agent
                     offspring = parent + np.random.randn(self.dimension)
 
                     # Ensure offspring stays within bounds (-10, 10 for example)
@@ -78,12 +93,17 @@ class RandomSearcher():
                 self.fitness = combined_fitness[better_indices]
             else:
                 # If no better agents, keep the current population
-                self.population = combined_population[:len(self.population)]
-                self.fitness = combined_fitness[:len(self.fitness)]
+                self.population = combined_population[: len(self.population)]
+                self.fitness = combined_fitness[: len(self.fitness)]
 
-            #Print current best fitness every iteration
+            # Print current best fitness every iteration
             if self.print_results:
-                print(f"Iteration {iteration + 1}, Best fitness: {np.min(self.fitness)}")
+                print(
+                    f"Iteration {iteration + 1}, Best fitness: {np.min(self.fitness)}"
+                )
+
+            best_so_far = min(best_so_far, np.min(self.fitness))
+            self.convergence_history.append(best_so_far)
 
         # Return the best solution found
         best_index = np.argmin(self.fitness)

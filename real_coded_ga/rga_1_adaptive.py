@@ -25,6 +25,8 @@ class RGA_1_Adaptive:
         # Calculate maximum iterations for adaptive parameters
         self.max_iter = nfe // pop_size
 
+        self.history = []
+
     def get_adaptive_params(self, current_iter: int) -> Tuple[float, float]:
         """Calculate adaptive pc and pm based on current iteration"""
         progress = current_iter / self.max_iter
@@ -47,13 +49,13 @@ class RGA_1_Adaptive:
             self, parent1: np.ndarray, parent2: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Linear crossover operator"""
-        # Create three offspring according to linear crossover formula
-        alpha = np.random.random()
-
-        # Three possible offspring
+        # Create three offspring with modified weights
+        alpha = np.random.uniform(-0.25, 1.25)  # Wider range for exploration
+        
         offspring1 = 0.5 * ((1 + alpha) * parent1 + (1 - alpha) * parent2)
         offspring2 = 0.5 * ((1 - alpha) * parent1 + (1 + alpha) * parent2)
-        offspring3 = -0.5 * ((1 - alpha) * parent1 + (1 + alpha) * parent2)
+        # More explorative third offspring
+        offspring3 = alpha * parent1 + (1 - alpha) * parent2
 
         # Stack offspring for evaluation
         offspring = np.vstack([offspring1, offspring2, offspring3])
@@ -76,9 +78,9 @@ class RGA_1_Adaptive:
         mutated = individual.copy()
 
         # Calculate adaptive mutation strength
-        b = 5.0  # System parameter determining degree of non-uniformity
+        b = 3.0  # Reduced b for slower decay of mutation strength
         r = current_iter / self.max_iter
-        mutation_strength = (1 - r) ** b
+        mutation_strength = (1 - r**2) ** b  # Modified mutation strength calculation
 
         for i in range(self.dim):
             if np.random.random() < pm:
@@ -105,7 +107,7 @@ class RGA_1_Adaptive:
             probs = fitness_values / total_fitness
         return self.population[np.random.choice(len(self.population), p=probs)]
 
-    def optimize(self, objective_func: Callable) -> Tuple[np.ndarray, float]:
+    def optimize(self, objective_func: Callable) -> Tuple[np.ndarray, float, list]:
         self.population = self.initialize_population()
         evaluations = 0
         best_solution = None
@@ -150,4 +152,6 @@ class RGA_1_Adaptive:
             self.population = np.array(new_population[: self.pop_size])
             current_iter += 1
 
-        return best_solution, best_fitness
+            self.history.append(best_fitness)
+
+        return best_solution, best_fitness, self.history

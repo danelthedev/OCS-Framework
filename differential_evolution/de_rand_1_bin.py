@@ -1,14 +1,25 @@
 import numpy as np
+from typing import Tuple, List
 
 
-def differential_evolution_rand1_bin(func, bounds, F, CR, pop_size, max_nfe):
+def differential_evolution_rand1_bin(
+    func, bounds, F=0.8, CR=0.9, pop_size=50, max_nfe=1000
+) -> Tuple[np.ndarray, List[float]]:
     dim = len(bounds)
     pop = np.random.rand(pop_size, dim)
     for i in range(dim):
         pop[:, i] = bounds[i][0] + pop[:, i] * (bounds[i][1] - bounds[i][0])
 
+    # Initialize convergence history
+    convergence_history = []
+    best_fitness_so_far = float("inf")
 
-    nfe = 0
+    # Initial population evaluation
+    fitness = np.array([func(ind) for ind in pop])
+    best_fitness_so_far = min(best_fitness_so_far, np.min(fitness))
+    convergence_history.append(best_fitness_so_far)
+
+    nfe = pop_size
     while nfe < max_nfe:
         for i in range(pop_size):
             indices = [idx for idx in range(pop_size) if idx != i]
@@ -26,6 +37,14 @@ def differential_evolution_rand1_bin(func, bounds, F, CR, pop_size, max_nfe):
 
             if f_trial < f_target:
                 pop[i] = trial
+                best_fitness_so_far = min(best_fitness_so_far, f_trial)
+            else:
+                best_fitness_so_far = min(best_fitness_so_far, f_target)
+
+            convergence_history.append(best_fitness_so_far)
+
+            if nfe >= max_nfe:
+                break
 
     best_idx = np.argmin([func(ind) for ind in pop])
-    return pop[best_idx]
+    return pop[best_idx], convergence_history

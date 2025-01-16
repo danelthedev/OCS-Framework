@@ -17,6 +17,7 @@ class RGA_3:
         self.pc = pc
         self.pm = pm
         self.nfe = nfe
+        self.convergence_history = []
 
     def initialize_population(self) -> np.ndarray:
         population = np.zeros((self.pop_size, self.dim))
@@ -75,8 +76,12 @@ class RGA_3:
         evaluations = 0
         best_solution = None
         best_fitness = float("-inf")
+        self.convergence_history = []  # Reset convergence history
 
-        while evaluations < self.nfe:
+        # Calculate max generations to match expected iterations
+        max_generations = self.nfe // self.pop_size
+
+        for generation in range(max_generations):
             # Evaluate current population
             fitness_values = np.array([objective_func(ind) for ind in self.population])
             evaluations += self.pop_size
@@ -109,5 +114,17 @@ class RGA_3:
 
             # Trim population if odd
             self.population = np.array(new_population[: self.pop_size])
+
+            # Track convergence after each generation
+            self.convergence_history.append(best_fitness)
+
+        # Normalize convergence history to 100 points
+        expected_length = 100
+        if len(self.convergence_history) < expected_length:
+            self.convergence_history.extend(
+                [best_fitness] * (expected_length - len(self.convergence_history))
+            )
+        elif len(self.convergence_history) > expected_length:
+            self.convergence_history = self.convergence_history[:expected_length]
 
         return best_solution, best_fitness

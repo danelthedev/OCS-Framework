@@ -1,5 +1,5 @@
 import numpy as np
-from L1 import GeneralFunction, sphere_function
+from Remade.L1 import GeneralFunction, sphere_function
 
 class RGA4Adaptive:
     def __init__(self, obj_function, lower_bounds, upper_bounds, population_size, pc_initial, pm_initial, max_nfe):
@@ -12,6 +12,7 @@ class RGA4Adaptive:
         self.max_nfe = max_nfe
         self.population = self.initialize_population()
         self.nfe = 0
+        self.convergence_history = []
 
     def initialize_population(self):
         return np.random.uniform(self.lower_bounds, self.upper_bounds, (self.population_size, len(self.lower_bounds)))
@@ -25,7 +26,9 @@ class RGA4Adaptive:
         return fitness
 
     def select_parents(self, fitness):
-        probabilities = fitness / np.sum(fitness)
+        # Convert to maximization problem for selection
+        fitness_transformed = 1 / (1 + fitness)  # or max(fitness) - fitness
+        probabilities = fitness_transformed / np.sum(fitness_transformed)
         parents_idx = np.random.choice(np.arange(self.population_size), size=2, p=probabilities)
         return self.population[parents_idx]
 
@@ -40,6 +43,8 @@ class RGA4Adaptive:
         return self.enforce_bounds(individual)
 
     def run(self):
+        best_so_far = float('inf')
+        
         while self.nfe < self.max_nfe:
             fitness = self.evaluate_population()
             pc = self.pc_initial / (1 + self.nfe / self.max_nfe)
@@ -63,6 +68,16 @@ class RGA4Adaptive:
             if child2_fitness < fitness[worst_idx]:
                 self.population[worst_idx] = child2
 
+            current_best = np.min(fitness)
+            best_so_far = min(best_so_far, current_best)
+            self.convergence_history.append(best_so_far)
+
+        expected_length = 100
+        if len(self.convergence_history) < expected_length:
+            self.convergence_history.extend([best_so_far] * (expected_length - len(self.convergence_history)))
+        elif len(self.convergence_history) > expected_length:
+            self.convergence_history = self.convergence_history[:expected_length]
+
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])
 
@@ -74,9 +89,18 @@ pc_initial = 0.8
 pm_initial = 0.1
 max_nfe = 1000
 
-# Using sphere_function from L1.py
-optimizer = RGA4Adaptive(sphere_function, lower_bounds, upper_bounds, population_size, pc_initial, pm_initial, max_nfe)
-best_solution, best_fitness = optimizer.run()
+# Run multiple times
+n_runs = 30
+all_results = []
+all_fitness = []
 
-print("Best solution:", best_solution)
-print("Best fitness:", best_fitness)
+for run in range(n_runs):
+    optimizer = RGA4Adaptive(sphere_function, lower_bounds, upper_bounds, population_size, pc_initial, pm_initial, max_nfe)
+    best_solution, best_fitness = optimizer.run()
+    all_results.append(best_solution)
+    all_fitness.append(best_fitness)
+
+print(f"Average fitness over {n_runs} runs:", np.mean(all_fitness))
+print(f"Best fitness found:", np.min(all_fitness))
+print(f"Worst fitness found:", np.max(all_fitness))
+print(f"Standard deviation:", np.std(all_fitness))

@@ -1,14 +1,18 @@
 import numpy as np
 
+
 def sphere_function(x):
     return np.sum(x**2)
+
 
 def schwefel_function(x):
     return np.sum(np.abs(x)) + np.prod(np.abs(x))
 
+
 def quartic_function(x):
     noise = np.random.uniform(0, 1)
-    return np.sum([(i + 1) * (x[i]**4) for i in range(len(x))]) + noise
+    return np.sum([(i + 1) * (x[i] ** 4) for i in range(len(x))]) + noise
+
 
 def ackley_function(x):
     a, b, c = 20, 0.2, 2 * np.pi
@@ -16,9 +20,11 @@ def ackley_function(x):
     sum2 = -np.exp(np.mean(np.cos(c * x)))
     return sum1 + sum2 + a + np.exp(1)
 
+
 def rastrigin_function(x):
     n = len(x)
     return 10 * n + np.sum(x**2 - 10 * np.cos(2 * np.pi * x))
+
 
 class GeneralFunction:
     def __init__(self, lower_bounds, upper_bounds, func):
@@ -32,6 +38,7 @@ class GeneralFunction:
     def evaluate(self, x):
         x = self.enforce_bounds(x)
         return self.func(x)
+
 
 if __name__ == "__main__":
     lower_bounds = [-100] * 10

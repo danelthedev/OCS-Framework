@@ -1,5 +1,5 @@
 import numpy as np
-from L1 import GeneralFunction, sphere_function
+from Remade.L1 import GeneralFunction, sphere_function
 
 class CGAAdaptiveV1Replacement:
     def __init__(self, obj_function, lower_bounds, upper_bounds, population_size, pc_initial, pm_initial, max_nfe):
@@ -12,6 +12,7 @@ class CGAAdaptiveV1Replacement:
         self.max_nfe = max_nfe
         self.population = self.initialize_population()
         self.nfe = 0
+        self.convergence_history = []
 
     def initialize_population(self):
         return np.random.uniform(self.lower_bounds, self.upper_bounds, (self.population_size, len(self.lower_bounds)))
@@ -48,10 +49,23 @@ class CGAAdaptiveV1Replacement:
         self.population[worst_idx] = child
 
     def run(self):
-        while self.nfe < self.max_nfe:
+        best_so_far = float('inf')
+        iteration = 0
+        
+        # Initial population evaluation
+        initial_fitness = self.evaluate_population()
+        best_so_far = min(best_so_far, np.min(initial_fitness))
+        self.convergence_history = [best_so_far]  # Start with initial best
+        
+        # Calculate max iterations based on remaining NFE
+        remaining_nfe = self.max_nfe - self.population_size  # Subtract initial population evaluation
+        evaluations_per_iter = 2  # 2 children per iteration
+        max_iterations = remaining_nfe // evaluations_per_iter
+        
+        for iteration in range(max_iterations):
             fitness = self.evaluate_population()
-            pc = self.pc_initial / (1 + self.nfe / self.max_nfe)
-            pm = self.pm_initial / (1 + self.nfe / self.max_nfe)
+            pc = self.pc_initial / (1 + iteration / max_iterations)
+            pm = self.pm_initial / (1 + iteration / max_iterations)
 
             parent1, parent2 = self.select_parents(fitness)
             child1, child2 = self.crossover(parent1, parent2, pc)
@@ -67,6 +81,17 @@ class CGAAdaptiveV1Replacement:
 
             if child2_fitness < np.max(fitness):
                 self.replace_worst(fitness, child2)
+
+            current_best = np.min(fitness)
+            best_so_far = min(best_so_far, current_best)
+            self.convergence_history.append(best_so_far)
+
+        # Normalize convergence history to 100 points
+        expected_length = 100
+        if len(self.convergence_history) < expected_length:
+            self.convergence_history.extend([best_so_far] * (expected_length - len(self.convergence_history)))
+        elif len(self.convergence_history) > expected_length:
+            self.convergence_history = self.convergence_history[:expected_length]
 
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])
