@@ -45,14 +45,13 @@ class DEBest2Exp:
 
     def run(self):
         best_so_far = float('inf')
-        self.convergence_history = []  # Initialize convergence history
+        self.convergence_history = [] 
 
         while self.nfe < self.max_nfe:
             fitness = self.evaluate_population()
             best_idx = np.argmin(fitness)
             best = self.population[best_idx]
             
-            # Track best solution
             current_best = np.min(fitness)
             best_so_far = min(best_so_far, current_best)
             self.convergence_history.append(best_so_far)
@@ -68,8 +67,7 @@ class DEBest2Exp:
                 new_population.append(self.selection(target, trial))
 
             self.population = np.array(new_population)
-
-        # Normalize convergence history to 100 points
+            
         expected_length = 100
         if len(self.convergence_history) < expected_length:
             self.convergence_history.extend([best_so_far] * (expected_length - len(self.convergence_history)))
@@ -79,7 +77,6 @@ class DEBest2Exp:
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])
 
-# Parameters
 lower_bounds = [-100] * 10
 upper_bounds = [100] * 10
 population_size = 20
@@ -87,7 +84,6 @@ F = 0.8
 CR = 0.9
 max_nfe = 1000
 
-# Using sphere_function from L1.py
 optimizer = DEBest2Exp(sphere_function, lower_bounds, upper_bounds, population_size, F, CR, max_nfe)
 best_solution, best_fitness = optimizer.run()
 
