@@ -26,8 +26,8 @@ class RGA4Adaptive:
         return fitness
 
     def select_parents(self, fitness):
-        # Convert to maximization problem for selection
-        fitness_transformed = 1 / (1 + fitness)  # or max(fitness) - fitness
+        
+        fitness_transformed = 1 / (1 + fitness)
         probabilities = fitness_transformed / np.sum(fitness_transformed)
         parents_idx = np.random.choice(np.arange(self.population_size), size=2, p=probabilities)
         return self.population[parents_idx]
@@ -81,7 +81,6 @@ class RGA4Adaptive:
         best_idx = np.argmin(self.evaluate_population())
         return self.population[best_idx], self.obj_function(self.population[best_idx])
 
-# Parameters
 lower_bounds = [-100] * 10
 upper_bounds = [100] * 10
 population_size = 20
@@ -89,7 +88,6 @@ pc_initial = 0.8
 pm_initial = 0.1
 max_nfe = 1000
 
-# Run multiple times
 n_runs = 30
 all_results = []
 all_fitness = []
